@@ -251,6 +251,42 @@ class DualHeap:
         self.maxheap = [0]
 
 
+def heapifyMinD(minq, maxq, root):
+    largest = root
+    left = 2*root
+    right = 2*root+1
+
+    if left <= minq[0] and minq[left][0] < minq[largest][0]:
+        largest = left
+
+    if right <= minq[0] and minq[right][0] < minq[largest][0]:
+        largest = right
+
+    if largest != root:
+        minq[root], minq[largest] = minq[largest], minq[root]
+        maxq[minq[root][1]][1] = root
+        maxq[minq[largest][1]][1] = largest
+        heapifyMinD(minq, maxq, largest)
+
+
+def heapifyMaxD(minq, maxq, root):
+    largest = root
+    left = 2*root
+    right = 2*root+1
+
+    if left <= minq[0] and minq[left][0] > minq[largest][0]:
+        largest = left
+
+    if right <= minq[0] and minq[right][0] > minq[largest][0]:
+        largest = right
+
+    if largest != root:
+        minq[root], minq[largest] = minq[largest], minq[root]
+        maxq[minq[root][1]][1] = root
+        maxq[minq[largest][1]][1] = largest
+        heapifyMaxD(minq, maxq, largest)
+
+
 def insertt(q: DualHeap, x):
     q.minheap.append(0)
     q.maxheap.append(0)
@@ -259,16 +295,71 @@ def insertt(q: DualHeap, x):
 
     i = q.minheap[0]
     j = q.maxheap[0]
-    q.minheap[i] = (x, q.maxheap[j])
-    q.maxheap[j] = (x, q.minheap[i])
+    q.minheap[i] = [x, j]
+    q.maxheap[j] = [x, i]
 
-    while i > 1 and q.minheap[i] < q.minheap[i//2]:
-        q.minheap[i], q.minheap[i//2] = q.minheap[i//2], q.minheap[i]
+    fixMinHeap(q.minheap, q.maxheap, i)
+    fixMaxHeap(q.maxheap, q.minheap, j)
+
+
+def fixMinHeap(minheap, maxheap, i):
+    while i > 1 and minheap[i][0] < minheap[i//2][0]:
+        maxheap[minheap[i][1]][1] = i//2
+        maxheap[minheap[i//2][1]][1] = i
+        minheap[i], minheap[i//2] = minheap[i//2], minheap[i]
         i //= 2
 
-    while j > 1 and q.maxheap[i] > q.minheap[i//2]:
-        q.maxheap[i], q.maxheap[i//2] = q.maxheap[i//2], q.maxheap[i]
-        i //= 2
+
+def fixMaxHeap(maxheap, minheap, j):
+    while j > 1 and maxheap[j][0] > maxheap[j//2][0]:
+        minheap[maxheap[j][1]][1] = j//2
+        minheap[maxheap[j//2][1]][1] = j
+        maxheap[j], maxheap[j//2] = maxheap[j//2], maxheap[j]
+        j //= 2
+
+
+def getMin(q: DualHeap):
+    if q.minheap[0] == 0:
+        return None
+    mini = q.minheap[1]
+    q.minheap[1] = q.minheap[q.minheap[0]]
+    q.maxheap[q.minheap[1][1]][1] = 1
+    q.minheap.pop()
+    q.minheap[0] -= 1
+    heapifyMinD(q.minheap, q.maxheap, 1)
+
+    if mini[1] != q.maxheap[0]:
+        q.maxheap[mini[1]] = q.maxheap[q.maxheap[0]]
+        q.minheap[q.maxheap[mini[1]][1]][1] = mini[1]
+    q.maxheap[0] -= 1
+    q.maxheap.pop()
+
+    if mini[1] <= q.maxheap[0]:
+        fixMaxHeap(q.maxheap, q.minheap, mini[1])
+
+    return mini[0]
+
+
+def getMax(q: DualHeap):
+    if q.maxheap[0] == 0:
+        return None
+    maxi = q.maxheap[1]
+    q.maxheap[1] = q.maxheap[q.maxheap[0]]
+    q.minheap[q.maxheap[1][1]][1] = 1
+    q.maxheap.pop()
+    q.maxheap[0] -= 1
+    heapifyMaxD(q.maxheap, q.minheap, 1)
+
+    if maxi[1] != q.minheap[0]:
+        q.minheap[maxi[1]] = q.minheap[q.minheap[0]]
+        q.maxheap[q.minheap[maxi[1]][1]][1] = maxi[1]
+    q.minheap[0] -= 1
+    q.minheap.pop()
+
+    if maxi[1] <= q.minheap[0]:
+        fixMinHeap(q.minheap, q.maxheap, maxi[1])
+
+    return maxi[0]
 
 
 tablica = [random.randint(1, 100) for i in range(10)]
@@ -280,8 +371,21 @@ lista = [[10, 20, 30, 40], [15, 25, 35], [27, 29, 37, 48, 93], [32, 33]]
 lista = mergek(lista)
 print(lista)
 
-dheap = DoubleHeap()
-while True:
-    insertToDH(dheap, int(input("Podaj liczbę")))
-    print(getMedian(dheap))
+# dheap = DoubleHeap()
+# while True:
+#     insertToDH(dheap, int(input("Podaj liczbę")))
+#     print(getMedian(dheap))
+
+siema = DualHeap()
+insertt(siema, 3)
+insertt(siema, 1)
+insertt(siema, 2)
+insertt(siema, 5)
+getMin(siema)
+getMin(siema)
+getMax(siema)
+getMax(siema)
+getMax(siema)
+print(siema.maxheap)
+print(siema.minheap)
 
