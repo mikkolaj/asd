@@ -213,6 +213,20 @@ for i in range(10):
     nowy.val = random.randint(1, 100)
     beg = addEnd(beg, nowy)
 
+
+def combsort(tab):
+    sortd = False
+    step = int(len(tab)/1.3)
+    while step > 1 or not sortd:
+        sortd = True
+        for i in range(0, len(tab)-step):
+            if tab[i] > tab[i+step]:
+                tab[i], tab[i+step] = tab[i+step], tab[i]
+                sortd = False
+        if step > 1:
+            step = int(step/1.3)
+
+
 printList(beg)
 minimum, beg = getMin(beg)
 print("Minimum:", minimum.val, "Lista:")

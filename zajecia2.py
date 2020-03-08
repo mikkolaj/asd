@@ -1,9 +1,8 @@
 import random
+import sys
 
 
 def quicksort(tab, left, right):
-    if right <= left:
-        return
     mid = tab[(left+right)//2]
     i = left
     j = right
@@ -51,34 +50,238 @@ def mergesort(tab):
             k += 1
 
 
-def heapify(tab, size, root):
+def heapify(tab, root):
     largest = root
-    left = 2*root+1
-    right = 2*root+2
+    left = 2*root
+    right = 2*root+1
 
-    if left < size and tab[left] > tab[largest]:
+    if left <= tab[0] and tab[left] > tab[largest]:
         largest = left
 
-    if right < size and tab[right] > tab[largest]:
+    if right <= tab[0] and tab[right] > tab[largest]:
         largest = right
 
     if largest != root:
         tab[root], tab[largest] = tab[largest], tab[root]
-        heapify(tab, size, largest)
+        heapify(tab, largest)
+
+
+def heapifyMin(tab, root):
+    largest = root
+    left = 2*root
+    right = 2*root+1
+
+    if left <= tab[0] and tab[left] < tab[largest]:
+        largest = left
+
+    if right <= tab[0] and tab[right] < tab[largest]:
+        largest = right
+
+    if largest != root:
+        tab[root], tab[largest] = tab[largest], tab[root]
+        heapify(tab, largest)
+
+
+def buildheap(tab):
+    for i in range(tab[0]//2, 0, -1):
+        heapify(tab, i)
 
 
 def heapsort(tab):
-    size = len(tab)
+    buildheap(tab)
+    for i in range(tab[0], 1, -1):
+        tab[i], tab[1] = tab[1], tab[i]
+        tab[0] -= 1
+        heapify(tab, 1)
 
-    for i in range(size//2, -1, -1):
-        heapify(tab, size, i)
 
-    for i in range(size-1, 0, -1):
-        tab[i], tab[0] = tab[0], tab[i]
-        heapify(tab, i, 0)
+# kolejka priorytetowa, q[0] przechowuje ilość elementów
+def getmax(q):
+    if q[0] == 0:
+        sys.exit()
+    res = q[1]
+    q[1] = q[q[0]]
+    q[0] -= 1
+    heapify(q, 1)
+    return res
+
+
+def insert(q, x):
+    if q[0] == len(q) - 1:
+        sys.exit()
+    q[0] += 1
+    i = q[0]
+    q[i] = x
+    while i > 1 and q[i] > q[i//2]:
+        q[i], q[i//2] = q[i//2], q[i]
+        i //= 2
+
+
+# mergowanie k tablic z pomocą kopca
+class Element:
+    def __init__(self):
+        self.val = None
+        self.lindex = None
+        self.lpos = None
+
+
+def insertMinE(q, x):
+    if q[0] == len(q) - 1:
+        sys.exit()
+    q[0] += 1
+    i = q[0]
+    q[i] = x
+    while i > 1 and q[i].val < q[i//2].val:
+        q[i], q[i//2] = q[i//2], q[i]
+        i //= 2
+
+
+def heapifyMinE(tab, root):
+    largest = root
+    left = 2*root
+    right = 2*root+1
+
+    if left <= tab[0] and tab[left].val < tab[largest].val:
+        largest = left
+
+    if right <= tab[0] and tab[right].val < tab[largest].val:
+        largest = right
+
+    if largest != root:
+        tab[root], tab[largest] = tab[largest], tab[root]
+        heapifyMinE(tab, largest)
+
+
+def mergek(lista):
+    heap = [0]*(len(lista)+1)
+    for i, val in enumerate(lista):
+        if len(val) == 0:
+            break
+        el = Element()
+        el.val = val[0]
+        el.lindex = i
+        el.lpos = 0
+        insertMinE(heap, el)
+
+    tab = []
+    while heap[0] != 0:
+        tab.append(heap[1].val)
+        heap[1].lpos += 1
+        if heap[1].lpos < len(lista[heap[1].lindex]):
+            heap[1].val = lista[heap[1].lindex][heap[1].lpos]
+        else:
+            heap[1] = heap[heap[0]]
+            heap[0] -= 1
+        heapifyMinE(heap, 1)
+    return tab
+
+
+# struktura danych z getMedian() i insert(x) w O(logn)
+def insertMin(q, x):
+    if q[0] == len(q) - 1:
+        q.append(0)
+        q[0] += 1
+    i = q[0]
+    q[i] = x
+    while i > 1 and q[i] < q[i//2]:
+        q[i], q[i//2] = q[i//2], q[i]
+        i //= 2
+
+
+def insertMax(q, x):
+    if q[0] == len(q) - 1:
+        q.append(0)
+        q[0] += 1
+    i = q[0]
+    q[i] = x
+    while i > 1 and q[i] > q[i // 2]:
+        q[i], q[i // 2] = q[i // 2], q[i]
+        i //= 2
+
+
+class DoubleHeap:
+    def __init__(self):
+        self.minheap = [0]
+        self.maxheap = [0]
+        self.median = None
+
+
+def getMedian(dheap: DoubleHeap):
+    if dheap.median is None:
+        return (dheap.minheap[1] + dheap.maxheap[1])/2
+    else:
+        return dheap.median
+
+
+def insertToDH(dheap: DoubleHeap, x):
+    if dheap.minheap[0] == 0:
+        dheap.minheap.append(x)
+        dheap.minheap[0] += 1
+        dheap.median = x
+    elif dheap.maxheap[0] == 0:
+        if x < (x+dheap.minheap[1])/2:
+            dheap.maxheap.append(x)
+        else:
+            dheap.maxheap.append(dheap.minheap[1])
+            dheap.minheap[1] = x
+        dheap.median = None
+        dheap.maxheap[0] += 1
+    else:
+        if dheap.median is None:
+            if dheap.minheap[1] > x > dheap.maxheap[1]:
+                dheap.median = x
+            elif dheap.minheap[1] > dheap.maxheap[1] > x:
+                dheap.median = dheap.maxheap[1]
+                dheap.maxheap[1] = x
+                heapify(dheap.maxheap, 1)
+            else:
+                dheap.median = dheap.minheap[1]
+                dheap.minheap[1] = x
+                heapifyMin(dheap.minheap, 1)
+        else:
+            insertMax(dheap.maxheap, min(x, dheap.median))
+            insertMin(dheap.minheap, max(x, dheap.median))
+            dheap.median = None
+
+
+# getMin() i getMax() w log(n)
+class DualHeap:
+    def __init__(self):
+        self.minheap = [0]
+        self.maxheap = [0]
+
+
+def insertt(q: DualHeap, x):
+    q.minheap.append(0)
+    q.maxheap.append(0)
+    q.minheap[0] += 1
+    q.maxheap[0] += 1
+
+    i = q.minheap[0]
+    j = q.maxheap[0]
+    q.minheap[i] = (x, q.maxheap[j])
+    q.maxheap[j] = (x, q.minheap[i])
+
+    while i > 1 and q.minheap[i] < q.minheap[i//2]:
+        q.minheap[i], q.minheap[i//2] = q.minheap[i//2], q.minheap[i]
+        i //= 2
+
+    while j > 1 and q.maxheap[i] > q.minheap[i//2]:
+        q.maxheap[i], q.maxheap[i//2] = q.maxheap[i//2], q.maxheap[i]
+        i //= 2
 
 
 tablica = [random.randint(1, 100) for i in range(10)]
+tablica[0] = len(tablica) - 1
 heapsort(tablica)
 print(tablica)
+
+lista = [[10, 20, 30, 40], [15, 25, 35], [27, 29, 37, 48, 93], [32, 33]]
+lista = mergek(lista)
+print(lista)
+
+dheap = DoubleHeap()
+while True:
+    insertToDH(dheap, int(input("Podaj liczbę")))
+    print(getMedian(dheap))
 
