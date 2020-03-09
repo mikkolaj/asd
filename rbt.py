@@ -3,6 +3,7 @@ class Node:
         self.value = None
         self.left = None
         self.right = None
+        self.black = True
 
 
 def printDepthFirst(tree: Node):
