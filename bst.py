@@ -31,6 +31,17 @@ def printChildrenFirst(tree: Node):
 
 
 def insert(tree: Node, val):
+    if tree is None:
+        tree = Node()
+        tree.value = val
+    elif val < tree.value:
+        tree.left = insert(tree.left, val)
+    elif val > tree.value:
+        tree.right = insert(tree.right, val)
+    return tree
+
+
+def insert2(tree: Node, val):
     if tree.value is None:
         tree.value = val
     elif val < tree.value:
@@ -55,7 +66,7 @@ def delete(tree: Node, val, parent):
         if tree.left is None and tree.right is None:
             if parent is None:
                 return None
-            if parent.left and parent.left == tree:
+            if parent.left == tree:
                 parent.left = None
             else:
                 parent.right = None
@@ -64,20 +75,26 @@ def delete(tree: Node, val, parent):
             childparent = tree
             while child.left is not None:
                 child = child.left
-                parent = child
+                childparent = child
             tree.value = child.value
-            if childparent != tree:
-                childparent.left = None
+            delete(child, child.value, childparent)
+        else:
+            if parent is None:
+                return tree.left or tree.right
+            if tree == parent.left:
+                parent.left = tree.left or tree.right
             else:
-                tree.right = None
+                parent.right = tree.left or tree.right
+
     return res
 
 
-tree = Node()
-insert(tree, 2)
-insert(tree, 1)
-insert(tree, 3)
+tree = None
+tree = insert(tree, 2)
+tree = insert(tree, 1)
+tree = insert(tree, 3)
 tree = delete(tree, 2, None)
 tree = delete(tree, 1, None)
 tree = delete(tree, 3, None)
 printChildrenFirst(tree)
+print(None or 7)
