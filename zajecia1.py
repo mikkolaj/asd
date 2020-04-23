@@ -37,14 +37,44 @@ def tsearch(tab, val):
         else:
             left = mid1 + 1
             right = mid2 - 1
+    return -1
 
 
 def bubblesort(tab):
     for i in range(len(tab)):
-        for j in range(len(tab)-1-j):
+        for j in range(len(tab)-1-i):
             if tab[j] > tab[j+1]:
                 tab[j], tab[j+1] = tab[j+1], tab[j]
     return tab
+
+
+def insertionSort(tab):
+    for i in range(1, len(tab)):
+        ref = tab[i]
+        j = i - 1
+        while j >= 0 and tab[j] < ref:
+            tab[j + 1] = tab[j]
+            j -= 1
+        tab[j + 1] = ref
+
+
+def selectionSort(tab, start):
+    min = (tab[start], start)
+    for i in range(start+1, len(tab)):
+        if tab[i] < min[0]:
+            min = (tab[i], i)
+    tab[start], tab[min[1]] = tab[min[1]], tab[start]
+    if start < len(tab) - 1:
+        selectionSort(tab, start + 1)
+
+
+def selectionsort(tab):
+    for i in range(len(tab)):
+        mini = i
+        for j in range(i+1, len(tab)):
+            if tab[j] < tab[mini]:
+                mini = j
+        tab[i], tab[mini] = tab[mini], tab[i]
 
 
 kolory = [1, 1, 3, 2, 2, 2, 4, 4, 3, 2, 1]

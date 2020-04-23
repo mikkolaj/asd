@@ -50,6 +50,39 @@ def mergesort(tab):
             k += 1
 
 
+def merges(tab):
+    pom = [0]*len(tab)
+    _mergesort(tab, pom, 0, len(tab)-1)
+
+
+def _mergesort(tab, pom, left, right):
+    if right - left > 0:
+        mid = (left + right)//2
+        _mergesort(tab, pom, left, mid)
+        _mergesort(tab, pom, mid+1, right)
+        i = left
+        j = mid + 1
+        k = left
+        while i <= mid and j <= right:
+            if tab[i] < tab[j]:
+                pom[k] = tab[i]
+                i += 1
+            else:
+                pom[k] = tab[j]
+                j += 1
+            k += 1
+        while i <= mid:
+            pom[k] = tab[i]
+            i += 1
+            k += 1
+        while j <= right:
+            pom[k] = tab[j]
+            j += 1
+            k += 1
+        for i in range(left, right+1):
+            tab[i] = pom[i]
+
+
 def heapify(tab, root):
     largest = root
     left = 2*root
@@ -66,7 +99,7 @@ def heapify(tab, root):
         heapify(tab, largest)
 
 
-def heapifyMin(tab, root):
+def heapifyMin(tab, root):  # O(logn)
     largest = root
     left = 2*root
     right = 2*root+1
@@ -82,12 +115,12 @@ def heapifyMin(tab, root):
         heapify(tab, largest)
 
 
-def buildheap(tab):
+def buildheap(tab):  # O(n) - wytłumaczone w Cormenie
     for i in range(tab[0]//2, 0, -1):
         heapify(tab, i)
 
 
-def heapsort(tab):
+def heapsort(tab):  # O(nlogn)
     buildheap(tab)
     for i in range(tab[0], 1, -1):
         tab[i], tab[1] = tab[1], tab[i]
@@ -362,30 +395,41 @@ def getMax(q: DualHeap):
     return maxi[0]
 
 
+def bucketSort(tab, k):
+    b = [[] for _ in range(k)]
+    for el in tab:
+        b[int(k*(el/(max(tab)+1)))].append(el)
+    for i in range(k):  b[i].sort()
+    res = []
+    for i in range(k): res.extend(b[i])
+    return res
+
+
 tablica = [random.randint(1, 100) for i in range(10)]
-tablica[0] = len(tablica) - 1
-heapsort(tablica)
+print(tablica)
+# tablica[0] = len(tablica) - 1
+merges(tablica)
 print(tablica)
 
-lista = [[10, 20, 30, 40], [15, 25, 35], [27, 29, 37, 48, 93], [32, 33]]
-lista = mergek(lista)
-print(lista)
+# lista = [[10, 20, 30, 40], [15, 25, 35], [27, 29, 37, 48, 93], [32, 33]]
+# lista = mergek(lista)
+# print(lista)
 
 # dheap = DoubleHeap()
 # while True:
 #     insertToDH(dheap, int(input("Podaj liczbę")))
 #     print(getMedian(dheap))
 
-siema = DualHeap()
-insertt(siema, 3)
-insertt(siema, 1)
-insertt(siema, 2)
-insertt(siema, 5)
-getMin(siema)
-getMin(siema)
-getMax(siema)
-getMax(siema)
-getMax(siema)
-print(siema.maxheap)
-print(siema.minheap)
+# siema = DualHeap()
+# insertt(siema, 3)
+# insertt(siema, 1)
+# insertt(siema, 2)
+# insertt(siema, 5)
+# getMin(siema)
+# getMin(siema)
+# getMax(siema)
+# getMax(siema)
+# getMax(siema)
+# print(siema.maxheap)
+# print(siema.minheap)
 

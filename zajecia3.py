@@ -22,18 +22,40 @@ def iquicksort(tab, left, right):
             stack[top] = right
 
 
+def iquicksort(A, i, j):
+    S = Stack()
+    S.push(i)
+    S.push(j)
+    while not S.is_empty():
+        right = S.pop()
+        left = S.pop()
+        mid = partition(A, i, j)
+        if mid - 1 > left:
+            S.push(i)
+            S.push(mid - 1)
+        if mid + 1 < right:
+            S.push(mid + 1)
+            S.push(right)
+
+
 def partition(tab, left, right):
     mid = (left+right)//2
+    pivot = tab[mid]
     while left <= right:
-        while tab[left] < tab[mid]:
+        while tab[left] < pivot:
             left += 1
-        while tab[right] > tab[mid]:
+        while tab[right] > pivot:
             right -= 1
         if left <= right:
+            if right == mid:
+                mid = left
+            elif left == mid:
+                mid = right
             tab[left], tab[right] = tab[right], tab[left]
             left += 1
             right -= 1
     return mid
+
 
 
 def countingsort(tab, maks):
