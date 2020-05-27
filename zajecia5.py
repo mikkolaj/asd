@@ -197,10 +197,13 @@ def MM(chain, n):
     F = [[float("inf")]*n for i in range(n)]
     for i in range(n):
         F[i][i] = 0
+    # długość podciągu macierzy
     for length in range(2, n+1):
+        # dla każdego przedziału długości length
         for i in range(n-length+1):
             j = i+length-1
             for k in range(i, j):
+                # minimum z pomnożenia lewej i prawej części podciągu
                 F[i][j] = min(F[i][j], F[i][k] + F[k+1][j] + chain[i] * chain[k+1] * chain[j+1])
     return F[0][n-1]
 

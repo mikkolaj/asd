@@ -57,7 +57,6 @@ def partition(tab, left, right):
     return mid
 
 
-
 def countingsort(tab, maks):
     temp = [0]*(maks+1)
     for i in tab:
@@ -70,7 +69,26 @@ def countingsort(tab, maks):
             el += 1
 
 
+def countingsort(tab):
+    n = len(tab)
+    k = max(tab)
+    counts = [0]*(k+1)
+    output = [0]*n
+
+    for i in tab:
+        counts[i] += 1
+
+    for i in range(1, k+1):
+        counts[i] += counts[i-1]
+
+    for i in range(n-1, -1, -1):
+        output[counts[tab[i]]-1] = tab[i]
+        counts[tab[i]] -= 1
+
+    return output
+
+
 tab = [10, 29, 10, 19, 11, 7, 12, 17, 3, 2, 5]
-iquicksort(tab, 0, len(tab)-1)
-# countingsort(tab, 29)
+# iquicksort(tab, 0, len(tab)-1)
+tab = countingsort(tab)
 print(tab)
