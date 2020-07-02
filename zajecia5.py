@@ -33,6 +33,7 @@ def fibboBST(n):
     return fnext
 
 
+# F[i] - dlugość najdłuższego podciągu kończącego się na tab[i]
 def LIS(tab):
     n = len(tab)
     F = [1]*n
@@ -44,8 +45,8 @@ def LIS(tab):
                 P[i] = j
     maks = ind = -1
     for i in range(n):
-        if tab[i] > maks:
-            maks = tab[i]
+        if F[i] > maks:
+            maks = F[i]
             ind = i
     return maks, P, ind
 
@@ -56,6 +57,7 @@ def printLIS(tab, P, i):
     print(tab[i])
 
 
+# F[i][j] - największy zysku uzyskany poprzez wzięcie maksymalnie i+1 pierwszych elementów mając j miejsca w plecaku
 def Knapsack(P, W, maxW):
     n = len(P)
     F = [[0]*(maxW+1) for i in range(n)]
@@ -68,12 +70,11 @@ def Knapsack(P, W, maxW):
                 F[i][w] = max(F[i][w], F[i-1][w-W[i]] + P[i])
     wyn = []
     i, w = n-1, maxW
-    while i > 0:
-        if w >= W[i] and F[i-1][w-W[i]] + P[i] > F[i-1][w]:
+    while i >= 0:
+        if w >= W[i] and (i == 0 or F[i-1][w-W[i]] + P[i] > F[i-1][w]):
             wyn.append(i)
             i, w = i-1, w-W[i]
         else:
-            wyn.append(i-1)
             i = i-1
     return F[n-1][maxW], wyn
 
@@ -162,7 +163,9 @@ def g1(v: Employee):
     return v.g, v.glist
 
 
-def suma(tab, i, s):  # czy w tab da się znaleźć sumę s na indeksach od 1 do i
+# czy w tab da się znaleźć sumę s na indeksach od 1 do i
+# F[i][j] - czy da się znaleźć sumę j w pierszych i elementach
+def suma(tab, i, s):
     F = [[False]*(s+1) for i in range(i+1)]
     for j in range(i+1):
         F[j][0] = True
@@ -175,6 +178,8 @@ def suma(tab, i, s):  # czy w tab da się znaleźć sumę s na indeksach od 1 do
     return F[i][s]
 
 
+# Najdłuższy wspólny podciąg
+# F[i][j] - najdłuższy wspólny podciąg do j-tej pozycji w pierwszym słowie i do i-tej pozycji w drugim słowie
 def NWP(A, B):
     n = len(A)
     m = len(B)
@@ -188,11 +193,15 @@ def NWP(A, B):
     return F[m][n]
 
 
+# Najdłuższy rosnący podciąg
 def NRP(A):
     B = sorted(A)
     return NWP(A, B)
 
 
+# Najmniejszy koszt wymnożenia wszystkich macierzy w ciągu
+# chain - ciąg pierwszych wymiarów kolejnych macierzy (wiersze), musi być podany jeden dodatkowy pod koniec
+# F[i][j] - optymalny koszt wymnożenia od i-tej do j-tej macierzy
 def MM(chain, n):
     F = [[float("inf")]*n for i in range(n)]
     for i in range(n):
@@ -208,6 +217,8 @@ def MM(chain, n):
     return F[0][n-1]
 
 
+# Minimalny koszt przejścia z pola (1, 1) w szachownicy na pole (n, n) korzystając tylko z ruchów w dół i w prawo
+# F[i][j] - minimalny koszt dotarcia na pole (i, j)
 def szachownica(A):
     n = len(A)
     F = [[0]*n for i in range(n)]
@@ -221,6 +232,8 @@ def szachownica(A):
     return F[n-1][n-1]
 
 
+# Minimalna ilość monet ze zbioru M potrzebna do wydania kwoty w
+# F[i] - minimalna ilość monet potrzebna do wydania kwoty i
 def wydawanko(M, w):
     F = [0]*(w+1)
     for i in range(1, w+1):
@@ -231,9 +244,9 @@ def wydawanko(M, w):
     return F[w]
 
 
-W = [12, 2, 1, 1, 4]
-P = [4, 2, 1, 2, 10]
+W = [4, 2, 1, 1, 12]
+P = [10, 2, 1, 2, 4]
 S = [3, 1, 2, 4]
 R = [3, 1, 7, 6, 7, 4]
-print(KnapsackPrep(P, W, 15))
+print(Knapsack(P, W, 15)[1])
 # print(MM(R, len(R)-1))

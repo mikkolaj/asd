@@ -1,4 +1,5 @@
-# Sortowanie topologiczne - wywołaj DFS i po przetworzeniu wierzchołka dopisz go na początek tworzonej listy
+# Sortowanie topologiczne - dla acyklicznego grafu skierowanego, krawędzie wskazują tylko z lewa na prawą, wywołaj DFS
+# i po przetworzeniu wierzchołka i dopisz go na początek tworzonej listy
 
 
 def Sort(G):
@@ -40,7 +41,14 @@ def EulerCycle(G):
     return cycle
 
 
-# Silnie spójne składowe
+# Silnie spójne składowe (graf skierowany, u i v należą do tej samej silnie spójnej składowej, gdy istnieje ścieżka z
+# u do v i z v do u, graf silnie spójnych składowych jest DAGiem [skierowanym grafem acyklicznym])
+# 1. Wywołujemy DFS i zapisujemy czasy przetworzenia
+# 2. Odwracamy kierunek krawędzi
+# 3. Przechodzimy po odwróconym grafie w kolejności malejących czasów przetworzenia i wierzchołki odwiedzone w ramach
+#    wywołania z jednego wierzchołka to silnie spójna składowa, działa bo jest to składowa, która w kolejności
+#    sortowania topologicznego jest pierwsza, czyli można ją odciąć i zwiedziać następne
+
 
 def DFS(G):
     def DFSVisit(G, u, visited, time):
@@ -95,7 +103,12 @@ def SilnieSpojne(G):
     return DFS2(R, times)
 
 
-# Mosty
+# Mosty - most w grafie to krawędź, po której usunięciu, graf się rozspójni, krawędź jest mostem wtw, gdy nie leży na
+# żadnym cyklu prostym
+# 1. Wykonaj DFS zapisując czas odwiedzenia dla każdego
+# 2. Dla każdego wierzchołka oblicz low(v) = min(d(v), min po u [jest krawędź wsteczna z v do u] z d(u),
+#                                                                           min po w [dziecko v w drzewie DFS] low(w))
+# 3. Mosty to krawędzie {v, parent(v)}, gdzie low(v) = d(v)
 
 def DFSMost(G):
     def DFSVisit(G, u, visited, parents, backward, time):
@@ -139,6 +152,9 @@ def Mosty(G):
     return mosty
 
 
+# Punkt artykulacji - wierzchołek, którego usunięcie, zwiększy liczbę spójnych składowych grafu nieskierowanego
+# root jest p. art., wtw, gdy posiada co najmniej 2 synów w drzewie DFS
+# zwykły wierzchołek v jest p. art., wtw, gdy ma syna u, takiego że low(u) >= times[v]
 def PunktyArtykulacji(G):
     backward, times, parents = DFSMost(G)
     print(times, parents, backward)
@@ -178,7 +194,7 @@ def knapsack2d(V, max_w, max_h ):
 def KnapsackRec(V, F, i, j, k):
     if F[i][j][k] > 0:  # jeżeli dane pole jest wypełnione, to znamy dla niego profit
         return F[i][j][k]
-    if i > 0:  # dla przedmiotów o ineksie większym niż zero musimy policzyć ich wartość
+    if i > 0:  # dla przedmiotów o indeksie większym niż zero musimy policzyć ich wartość
         F[i][j][k] = KnapsackRec(V, F, i-1, j, k)
         # jeżeli przedmiot się mieści, to bierzemy maksimum z profitu z wzięcia przedmiotu i nie wzięcia go
         if j >= V[i][1] and k >= V[i][2]:
@@ -190,67 +206,67 @@ P = [(5,10,3), (7,8,12), (2,7,3)]
 # print( knapsack2d( P, 16, 15 ))   # wypisze 9
 
 G = [
-[1, 5],
-[5, 6, 0, 2],
-[1, 6, 3, 4],
-[2, 4],
-[3, 2, 6, 5],
-[0, 1, 4, 6],
-[1, 2, 4, 5],
+    [1, 5],
+    [5, 6, 0, 2],
+    [1, 6, 3, 4],
+    [2, 4],
+    [3, 2, 6, 5],
+    [0, 1, 4, 6],
+    [1, 2, 4, 5],
 ]
 
 F = [
-[1, 2, 4],
-[2, 3],
-[],
-[5, 6],
-[3],
-[],
-[]
+    [1, 2, 4],
+    [2, 3],
+    [],
+    [5, 6],
+    [3],
+    [],
+    []
 ]
 
 H = [
-[2, 4],
-[0, 9],
-[1],
-[4, 6],
-[5],
-[3],
-[5],
-[3, 9],
-[7],
-[10],
-[8, 6],
+    [2, 4],
+    [0, 9],
+    [1],
+    [4, 6],
+    [5],
+    [3],
+    [5],
+    [3, 9],
+    [7],
+    [10],
+    [8, 6],
 ]
 
 I = [
-[1, 3],
-[0, 2],
-[1, 3, 4],
-[0, 2],
-[2, 5, 6],
-[4, 6],
-[5, 4]
+    [1, 3],
+    [0, 2],
+    [1, 3, 4],
+    [0, 2],
+    [2, 5, 6],
+    [4, 6],
+    [5, 4]
 ]
 
 J = [
-[1, 4],
-[0,2,4,3],
-[1,3],
-[1,2],
-[1,0],
+    [1, 4],
+    [0,2,4,3],
+    [1,3],
+    [1,2],
+    [1,0],
 ]
 
 K = [
-[1, 3],
-[0, 2],
-[1, 3, 4],
-[0, 2],
-[2, 5, 6],
-[4, 6],
-[5, 4, 7],
-[6, 8],
-[7]
+    [1, 3],
+    [0, 2],
+    [1, 3, 4],
+    [0, 2],
+    [2, 5, 6],
+    [4, 6],
+    [5, 4, 7],
+    [6, 8],
+    [7]
 ]
 
 # print(EulerCycle(G))

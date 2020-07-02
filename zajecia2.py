@@ -432,4 +432,7 @@ print(tablica)
 # getMax(siema)
 # print(siema.maxheap)
 # print(siema.minheap)
+tab = [6, 6, 10]
+quicksort(tab, 0, 2)
+print(tab)
 

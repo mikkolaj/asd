@@ -1,6 +1,8 @@
 from queue import Queue
 
 
+# Maksymalny przepływ w grafie skierowanym (i krawędzie tylko w jedną stronę), O(VE^2), bo znajdywanie ścieżki
+# powiększającej z użyciem BFSa
 def FordFulkerson(G, s, t):
     parents = [None]*len(G)
     max_flow = 0
@@ -37,11 +39,11 @@ def BFS(G, s, t, parents):
 
 
 graph = [[0, 16, 13, 0, 0, 0],
-        [0, 0, 10, 12, 0, 0],
-        [0, 4, 0, 0, 14, 0],
-        [0, 0, 9, 0, 0, 20],
-        [0, 0, 0, 7, 0, 4],
-        [0, 0, 0, 0, 0, 0]]
+         [0, 0, 10, 12, 0, 0],
+         [0, 4, 0, 0, 14, 0],
+         [0, 0, 9, 0, 0, 20],
+         [0, 0, 0, 7, 0, 4],
+         [0, 0, 0, 0, 0, 0]]
 
 print(FordFulkerson(graph, 0, 5))
 

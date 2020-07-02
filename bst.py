@@ -22,11 +22,12 @@ def printChildrenFirst(tree: Node):
     while children:
         newchildren = []
         for i in children:
-            print(i.value)
+            print(i.value, end=" ")
             if i.left is not None:
                 newchildren.append(i.left)
             if i.right is not None:
                 newchildren.append(i.right)
+        print("")
         children = newchildren
 
 
@@ -70,12 +71,12 @@ def delete(tree: Node, val, parent):
                 parent.left = None
             else:
                 parent.right = None
-        if tree.left is not None and tree.right is not None:
+        elif tree.left is not None and tree.right is not None:
             child = tree.right
             childparent = tree
             while child.left is not None:
-                child = child.left
                 childparent = child
+                child = child.left
             tree.value = child.value
             delete(child, child.value, childparent)
         else:
@@ -90,11 +91,23 @@ def delete(tree: Node, val, parent):
 
 
 tree = None
+tree = insert(tree, 8)
+tree = insert(tree, 4)
+tree = insert(tree, 12)
 tree = insert(tree, 2)
+tree = insert(tree, 6)
 tree = insert(tree, 1)
 tree = insert(tree, 3)
-tree = delete(tree, 2, None)
-tree = delete(tree, 1, None)
+tree = insert(tree, 5)
+tree = insert(tree, 7)
+tree = insert(tree, 10)
+tree = insert(tree, 9)
+tree = insert(tree, 11)
+tree = insert(tree, 14)
+tree = insert(tree, 13)
+tree = insert(tree, 15)
+
+tree = delete(tree, 12, None)
+tree = delete(tree, 6, None)
 tree = delete(tree, 3, None)
 printChildrenFirst(tree)
-print(None or 7)

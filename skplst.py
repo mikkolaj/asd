@@ -1,4 +1,6 @@
 import random
+
+
 class Node:
     def __init__(self, val, level):
         self.val = val

@@ -59,54 +59,6 @@ def DFS(G):
             DFSVisit(v)
 
 
-class Kueue:
-    def __init__(self):
-        self.stack1 = []
-        self.stack2 = []
-
-    def push(self, x):
-        self.stack1.append(x)
-
-    def get(self):
-        if len(self.stack2) > 0:
-            return self.stack2.pop()
-        while len(self.stack1) > 0:
-            self.stack2.append(self.stack1.pop())
-        return self.stack2.pop()
-
-
-def tasks(A: list):
-    A.sort(key=lambda tup: tup[0])
-    Cbusy = (False, 0)
-    Jbusy = (False, 0)
-    res = ""
-    for i in A:
-        if not Cbusy[0] or Cbusy[1] <= i[0]:
-            res += "C"
-            Cbusy = (True, i[1])
-        elif not Jbusy or Jbusy[1] <= i[0]:
-            res += "J"
-            Jbusy = (True, i[1])
-        else:
-            return "IMPOSSIBLE"
-    return res
-
-
-def width(S, word: str):
-    F = [0]*len(word)
-    for i in range(len(F)):
-        for s in S:
-            substr = word[max(0, i-len(s)+1):i+1]
-            print(s, substr)
-            if s == substr:
-                if i - len(s) >= 0:
-                    F[i] = max(F[i], min(len(s), F[i-len(s)]))
-                else:
-                    F[i] = max(F[i], len(s))
-    print(F)
-    return F[-1]
-
-
 # a = Graph(6)
 # a.addEdges(0, [1, 2])
 # a.addEdges(1, [2])
@@ -117,12 +69,3 @@ def width(S, word: str):
 # BFS(a, a.vertices[0])
 # for i in range(0, len(a.vertices)):
 #     print(i+1, a.vertices[i].d)
-#
-# b = Kueue()
-# for i in range(5):
-#     b.push(i)
-# for i in range(5):
-#     print(b.get())
-
-# print(tasks([(99, 150), (1, 100), (100, 301), (2, 5), (150, 250)]))
-print(width(["ab", "abab", "ba", "bab", "b"], "ababbab"))

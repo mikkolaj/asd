@@ -1,15 +1,15 @@
 from queue import PriorityQueue
 
 
-def relax(u, v, d, parents):
-    if d[v[0]] > d[u] + v[1]:
-        d[v[0]] = d[u] + v[1]
-        parents[v[0]] = u
+def relax(u, v, w, d, parents):
+    if d[v] > d[u] + w:
+        d[v] = d[u] + w
+        parents[v] = u
         return True
     return False
 
 
-# Konstruuje najtańsze ścieżki jeden-każdy, wagi to liczby >=0
+# Konstruuje najtańsze ścieżki jeden-każdy, wagi to liczby >=0, O(E*logV)
 def dijkstra(A, s, t):
     Q = PriorityQueue()
     d = [float("inf")]*len(A)
@@ -17,10 +17,10 @@ def dijkstra(A, s, t):
     parents = [None]*len(A)
     Q.put((0, s))
     while not Q.empty():
-        w, u = Q.get()
-        for i in A[u]:
-            if relax(u, i, d, parents):
-                Q.put((d[i[0]], i[0]))
+        _, u = Q.get()
+        for v, w in A[u]:
+            if relax(u, v, w, d, parents):
+                Q.put((d[v], v))
     while t is not None:
         print(t, end=" ")
         t = parents[t]
@@ -48,7 +48,7 @@ def dijkstra2(A, s):
     return parents
 
 
-# Konstruuje najtańsze ścieżki jeden-każdy, wagi mogą być ujemne, potrafi stwierdzić cykl ujemny
+# Konstruuje najtańsze ścieżki jeden-każdy, wagi mogą być ujemne, potrafi stwierdzić cykl ujemny, O(V*E)
 def bellman_ford(A, s, t):
     d = [float("inf")] * len(A)
     d[s] = 0
@@ -67,18 +67,18 @@ def bellman_ford(A, s, t):
         t = parents[t]
 
 
-# Konstruuje najtańsze ścieżki każdy-każdy
+# Konstruuje najtańsze ścieżki każdy-każdy, O(V^3)
 def floyd_warshall(W):
     n = len(W)
     S = W[:]
     P = [[None]*n for _ in range(n)]
-    for i in range(len(P)):
-        for j in range(len(P)):
+    for i in range(n):
+        for j in range(n):
             if W[i][j] < float("inf"):
                 P[i][j] = i
-    for t in range(0, n):
-        for i in range(0, n):
-            for j in range(0, n):
+    for t in range(n):
+        for i in range(n):
+            for j in range(n):
                 if S[i][j] > S[i][t] + S[t][j]:
                     P[i][j] = P[t][j]
                     S[i][j] = S[i][t] + S[t][j]
@@ -113,7 +113,8 @@ def union(x, y):
             y.rank += 1
 
 
-# Znajduje minimalne drzewo rozpinające - najtańszy zbiór krawędzi pokrywających wszystkie wierzchołki
+# Znajduje minimalne drzewo rozpinające w grafie spójnym, nieskierowanym - najtańszy zbiór krawędzi pokrywających
+# wszystkie wierzchołki, O(ElogV)
 def Kruskal(G):
     edges = []
     result = [[] for _ in range(len(G))]
@@ -142,7 +143,7 @@ def relaxPrim(u, v, w, d, parents):
     return False
 
 
-# Znajduje minimalne drzewo rozpinające - najtańszy zbiór krawędzi pokrywających wszystkie wierzchołki
+# Znajduje minimalne drzewo rozpinające - najtańszy zbiór krawędzi pokrywających wszystkie wierzchołki, O(ElogV)
 def Prim(A, s):
     Q = PriorityQueue()
     d = [float("inf")]*len(A)
@@ -150,7 +151,7 @@ def Prim(A, s):
     parents = [None]*len(A)
     Q.put((0, s))
     while not Q.empty():
-        w, u = Q.get()
+        _, u = Q.get()
         for v, w in A[u]:
             if relaxPrim(u, v, w, d, parents):
                 Q.put((w, v))

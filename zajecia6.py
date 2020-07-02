@@ -4,7 +4,10 @@ class Lekcja:
         self.end = end
 
 
+# Dana jest lista zajęć opisanych jako czas startu i końca, wybierz największy podzbiór zajęć bez kolizji
+# Sortujemy po końcach i wybieramy najwcześniej kończące się zajęcia
 def zajecia(lista: Lekcja):
+    lista.sort(key=lambda lekcja: lekcja.end)
     wyn = [lista[0]]
     m = 1
     while m < len(lista):
@@ -36,6 +39,9 @@ def buildheap(tab):
         heapifyMin(tab, i)
 
 
+# Dana jest tablica A z ilością wystąpień różnych symboli w tekście, obliczyć ile znaków zająłby tekst zakodowany
+# optymalnym kodem Huffmana. Tworzymy MinHeap i łączymy dwa najrzadsze elementy w jeden sumująć do wyniku ich sumaryczną
+# ilość wystąpień
 def huffman_len(A):
     buildheap(A)
     res = 0
@@ -49,6 +55,8 @@ def huffman_len(A):
     return res
 
 
+# Uzyskaj maksymalną wartość zabranych płynów (nie trzeba brać całego płynu)
+# Bierzemy po kolei od najwartościowszych płynów, aż do zapełnienia pojemności
 def continuousKnapsack(W, P, K):
     A = [(W[i], P[i]/W[i]) for i in range(len(W))]
     A = sorted(A, key=lambda tup: tup[1], reverse=True)
@@ -62,6 +70,9 @@ def continuousKnapsack(W, P, K):
     return sum
 
 
+# Przejedź trasę z najlepszym kosztem tankowania: jeśli aktualna stacja jest najtańsza - tankuj do pełna,
+# jeśli w naszym zasięgu jest stacja, na której jest taniej zatankuj tylko tyle, żeby do niej dojechać
+# A - odległości do kolejnych stacji benzynowych i ceny na nich
 def minrefuels(A, maxfuel, end):
     pos = 0  # index
     cur = A[0]
@@ -79,7 +90,7 @@ def minrefuels(A, maxfuel, end):
         if best[0] - cur[0] > maxfuel:  # nie da się dojechać
             return None
 
-        i = pos + 2
+        i = pos + 1
         while i < len(A) and A[i][0] <= maxfuel + cur[0]:
             if A[i][1] < best[1]:
                 best = A[i]
@@ -91,10 +102,68 @@ def minrefuels(A, maxfuel, end):
         cur = best
 
 
+def tasks(A: list):
+    A.sort(key=lambda tup: tup[0])
+    Cbusy = (False, 0)
+    Jbusy = (False, 0)
+    res = ""
+    for i in A:
+        if not Cbusy[0] or Cbusy[1] <= i[0]:
+            res += "C"
+            Cbusy = (True, i[1])
+        elif not Jbusy or Jbusy[1] <= i[0]:
+            res += "J"
+            Jbusy = (True, i[1])
+        else:
+            return "IMPOSSIBLE"
+    return res
+
+
+
+class Kueue:
+    def __init__(self):
+        self.stack1 = []
+        self.stack2 = []
+
+    def push(self, x):
+        self.stack1.append(x)
+
+    def get(self):
+        if len(self.stack2) > 0:
+            return self.stack2.pop()
+        while len(self.stack1) > 0:
+            self.stack2.append(self.stack1.pop())
+        return self.stack2.pop()
+
+
+def width(S, word: str):
+    F = [0]*len(word)
+    for i in range(len(F)):
+        for s in S:
+            substr = word[max(0, i-len(s)+1):i+1]
+            print(s, substr)
+            if s == substr:
+                if i - len(s) >= 0:
+                    F[i] = max(F[i], min(len(s), F[i-len(s)]))
+                else:
+                    F[i] = max(F[i], len(s))
+    print(F)
+    return F[-1]
+
+
 # P = [7, 2, 5, 10, 8]
 # W = [3, 1, 6, 3, 6]
 # print(continuousKnapsack(W, P, 7))
 test = [(0, 2), (4, 5), (8, 7), (10, 1)]
 print(minrefuels(test, 10, 21))
+
+# b = Kueue()
+# for i in range(5):
+#     b.push(i)
+# for i in range(5):
+#     print(b.get())
+
+# print(tasks([(99, 150), (1, 100), (100, 301), (2, 5), (150, 250)]))
+print(width(["ab", "abab", "ba", "bab", "b"], "ababbab"))
 
 

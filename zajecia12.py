@@ -163,7 +163,6 @@ def sumuj(root):
     return root.val + sumuj(root.left) + sumuj(root.right)
 
 
-
 tree = BSTDict()
 tree.insert(10, "abc")
 tree.insert(20, "abc")
